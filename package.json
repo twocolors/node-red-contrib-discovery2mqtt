@@ -13,7 +13,7 @@
     }
   },
   "dependencies": {
-    "eventsource": "^0.2.1",
+    "eventsource": "^1.1.0",
     "mqtt": "^4.2.6"
   },
   "bugs": {
