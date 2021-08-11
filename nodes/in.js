@@ -9,6 +9,7 @@ module.exports = function (RED) {
             node.server = RED.nodes.getNode(node.config.server);
             node.statusStr = 'offline';
             node.statusTimer = null;
+            node.firstMsg = true;
 
             if (typeof (node.config.component) === 'string') {
                 node.config.component = JSON.parse(node.config.component); //for compatible
@@ -92,10 +93,14 @@ module.exports = function (RED) {
                         text: data.payload
                     });
 
-                    node.send({
-                        payload: data.payload,
-                        topic: data.topic
-                    });
+                    if (node.firstMsg && !node.config.startMsg) {
+                        node.firstMsg = false;
+                    } else {
+                        node.send({
+                            payload: data.payload,
+                            topic: data.topic
+                        });
+                    }
                 }
 
                 node.statusTimer = setTimeout(function () {

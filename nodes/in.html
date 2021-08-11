@@ -19,10 +19,10 @@
         <label for="force-refresh"><i class="fa fa-refresh"></i> <span data-i18n="label.refresh"></span></label>
         <a class="red-ui-button d2m-width" id="force-refresh" name="force-refresh"><span data-i18n="label.refresh_devices_list"></span></a>
     </div>
-    <!-- <div class="form-row">
-        <label for='node-input-outputAtStartup'><i class='fa fa-share-square'></i> <span data-i18n="label.start_output"></span></label>
-        <input type="checkbox" id="node-input-outputAtStartup" checked="checked" style="display: inline-block; width: auto; vertical-align: top;"> <span data-i18n="label.start_output_help"></span></input>
-    </div> -->
+    <div class="form-row">
+        <label for='node-input-startMsg'><i class='fa fa-share-square'></i> <span data-i18n="label.start_msg"></span></label>
+        <input type="checkbox" id="node-input-startMsg" checked="checked" style="display: inline-block; width: auto; vertical-align: top;"> <span data-i18n="label.start_msg_help"></span></input>
+    </div>
     <div class="form-tips" data-i18n="[html]tip.deploy"></div>
 </script>
 
@@ -35,6 +35,7 @@
             server: { type: 'discovery2mqtt-server', required: true },
             component: { value: null, required: true },
             friendly_name: { value: null },
+            startMsg: { value: true },
         },
         inputs: 0,
         outputs: 1,
