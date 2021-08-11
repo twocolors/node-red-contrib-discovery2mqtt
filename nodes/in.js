@@ -7,7 +7,7 @@ module.exports = function (RED) {
             var node = this;
             node.config = config;
             node.server = RED.nodes.getNode(node.config.server);
-            node.statusText = 'offline';
+            node.statusStr = 'offline';
             node.statusTimer = null;
 
             if (typeof (node.config.component) === 'string') {
@@ -33,26 +33,26 @@ module.exports = function (RED) {
                 }
             } else {
                 node.status({
-                    fill: "red",
-                    shape: "dot",
-                    text: "node-red-contrib-discovery2mqtt/in:status.no_server"
+                    fill: 'red',
+                    shape: 'dot',
+                    text: 'node-red-contrib-discovery2mqtt/in:status.no_server'
                 });
             }
         }
 
         onConnect() {
             this.status({
-                fill: "green",
-                shape: "dot",
-                text: "node-red-contrib-discovery2mqtt/in:status.connected"
+                fill: 'green',
+                shape: 'dot',
+                text: 'node-red-contrib-discovery2mqtt/in:status.connected'
             });
         }
 
         onConnectError() {
             this.status({
-                fill: "red",
-                shape: "dot",
-                text: "node-red-contrib-discovery2mqtt/in:status.no_connection"
+                fill: 'red',
+                shape: 'dot',
+                text: 'node-red-contrib-discovery2mqtt/in:status.no_connection'
             });
         }
 
@@ -66,7 +66,7 @@ module.exports = function (RED) {
                 node.server.removeListener('onConnectError', node.listener_onConnectError);
             }
             if (node.listener_onMessage) {
-                node.server.removeListener("onMessage", node.listener_onMessage);
+                node.server.removeListener('onMessage', node.listener_onMessage);
             }
 
             node.onConnectError();
@@ -82,13 +82,13 @@ module.exports = function (RED) {
 
                 var topic = parts.pop();
                 if (topic == 'status') {
-                    node.statusText = data.payload;
+                    node.statusStr = data.payload;
                 }
 
                 if (topic == 'state') {
                     node.status({
-                        fill: "green",
-                        shape: "dot",
+                        fill: 'green',
+                        shape: 'dot',
                         text: data.payload
                     });
 
@@ -100,9 +100,9 @@ module.exports = function (RED) {
 
                 node.statusTimer = setTimeout(function () {
                     node.status({
-                        fill: "green",
-                        shape: "dot",
-                        text: node.statusText
+                        fill: node.statusStr == 'online' ? 'green' : 'grey',
+                        shape: 'dot',
+                        text: node.statusStr
                     });
                 }, 3 * 1000);
             }
