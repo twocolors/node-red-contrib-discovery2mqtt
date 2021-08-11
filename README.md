@@ -11,7 +11,7 @@ Support component:
 * switch
 * sensor
 
-<img src="https://github.com/twocolors/node-red-contrib-discovery2mqtt/blob/master/readme/flow.png?raw=true">
-<img src="https://github.com/twocolors/node-red-contrib-discovery2mqtt/blob/master/readme/server.png?raw=true">
-<img src="https://github.com/twocolors/node-red-contrib-discovery2mqtt/blob/master/readme/in.png?raw=true">
-<img src="https://github.com/twocolors/node-red-contrib-discovery2mqtt/blob/master/readme/out.png?raw=true">
+<img src="https://github.com/twocolors/node-red-contrib-discovery2mqtt/raw/main/readme/flow.png">
+<img src="https://github.com/twocolors/node-red-contrib-discovery2mqtt/raw/main/readme/server.png">
+<img src="https://github.com/twocolors/node-red-contrib-discovery2mqtt/raw/main/readme/in.png">
+<img src="https://github.com/twocolors/node-red-contrib-discovery2mqtt/raw/main/readme/out.png">
