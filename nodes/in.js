@@ -7,7 +7,7 @@ module.exports = function (RED) {
             var node = this;
             node.config = config;
             node.server = RED.nodes.getNode(node.config.server);
-            node.statusStr = 'offline';
+            node.statusStr = null;
             node.statusTimer = null;
             node.firstMsg = true;
 
@@ -16,7 +16,7 @@ module.exports = function (RED) {
             }
 
             if (node.server) {
-                node.status({})
+                node.status({});
 
                 node.listener_onConnect = function () { node.onConnect(); }
                 node.server.on('onConnect', node.listener_onConnect);
@@ -103,13 +103,16 @@ module.exports = function (RED) {
                     }
                 }
 
-                node.statusTimer = setTimeout(function () {
-                    node.status({
-                        fill: node.statusStr == 'online' ? 'green' : 'grey',
-                        shape: 'dot',
-                        text: node.statusStr
-                    });
-                }, 3 * 1000);
+                if (node.statusStr) {
+                    let color = node.statusStr == 'online' ? 'green' : 'grey';
+                    node.statusTimer = setTimeout(function () {
+                        node.status({
+                            fill: color,
+                            shape: 'dot',
+                            text: node.statusStr
+                        });
+                    }, 3 * 1000);
+                }
             }
         }
 
