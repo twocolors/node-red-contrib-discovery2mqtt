@@ -1,0 +1,115 @@
+<script type="text/x-red" data-template-name="discovery2mqtt-in">
+    <link rel="stylesheet" href="discovery2mqtt/static/css/common.css" type="text/css" />
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-bookmark"></i> <span data-i18n="label.name"></span></label>
+        <input type="text" id="node-input-name" data-i18n="[placeholder]placeholder.name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-globe"></i> <span data-i18n="label.server"></span></label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-component"><i class="fa fa-crosshairs"></i> <span data-i18n="label.component"></span></label>
+        <select id="node-input-component" data-single="true"></select>
+        <input type="hidden" id="node-input-friendly_name">
+    </div>
+    <div class="form-row">
+        <label for="force-refresh"><i class="fa fa-refresh"></i> <span data-i18n="label.refresh"></span></label>
+        <a class="red-ui-button d2m-width" id="force-refresh" name="force-refresh"><span data-i18n="label.refresh_devices_list"></span></a>
+    </div>
+    <!-- <div class="form-row">
+        <label for='node-input-outputAtStartup'><i class='fa fa-share-square'></i> <span data-i18n="label.start_output"></span></label>
+        <input type="checkbox" id="node-input-outputAtStartup" checked="checked" style="display: inline-block; width: auto; vertical-align: top;"> <span data-i18n="label.start_output_help"></span></input>
+    </div> -->
+    <div class="form-tips" data-i18n="[html]tip.deploy"></div>
+</script>
+
+<script type='text/javascript'>
+    RED.nodes.registerType('discovery2mqtt-in', {
+        category: 'Discovery2mqtt',
+        color: 'darksalmon',
+        defaults: {
+            name: { value: '' },
+            server: { type: 'discovery2mqtt-server', required: true },
+            component: { value: null, required: true },
+            friendly_name: { value: null },
+        },
+        inputs: 0,
+        outputs: 1,
+        outputLabels: ["value"],
+        paletteLabel: 'in',
+        align: 'left',
+        icon: 'icons.svg',
+        label: function () {
+            var label = 'd2m-input';
+
+            if (this.name) {
+                label = this.name;
+            } else if (typeof (this.friendly_name) == 'string' && this.friendly_name.length) {
+                label = this.friendly_name;
+            }
+
+            return label;
+        },
+        oneditprepare: function () {
+            var node = this;
+
+            d2m_list_state(node.component);
+
+            $('#force-refresh').click(function () {
+                d2m_list_state(node.component, true);
+            });
+
+            //this bad hack ...
+            // $('#node-input-server').change(function () {
+            //     d2m_list_state(node.component, true);
+            // });
+
+            function d2m_list_state(value = null, force = false) {
+                setTimeout(function () {
+                    var server = RED.nodes.node($('#node-input-server').val());
+                    var selected = $('#node-input-component');
+
+                    if (!server || !server.id) return;
+
+                    $.getJSON('discovery2mqtt/getComponents', {
+                        controllerID: server.id,
+                        forceRefresh: force
+                    }).done(function (data) {
+                        selected.empty();
+
+                        var optgroup = '';
+                        var groupHtml = '';
+                        data.sort(function (a, b) {
+                            if (a.control_name > b.control_name) {
+                                return 1;
+                            }
+                            if (a.control_name < b.control_name) {
+                                return -1;
+                            }
+                            return 0;
+                        }).forEach(function (c) {
+                            if (optgroup != c.control_name) {
+                                groupHtml = $('<optgroup/>', { label: c.control_name });
+                                groupHtml.appendTo(selected);
+                                optgroup = c.control_name;
+                            }
+                            if (c.state_topic) {
+                                $('<option value=\'' + JSON.stringify([c.state_topic, c.availability_topic]) + '\'>' + c.type + '/' + c.device_name + '</option>').appendTo(groupHtml);
+                            }
+                        });
+
+                        selected.val(value);
+                    });
+                }, 100);
+            }
+        },
+        oneditsave: function () {
+            var selectedOption = $('#node-input-component option:selected');
+            if (selectedOption) {
+                $('#node-input-friendly_name').val(selectedOption.text());
+            }
+        }
+    });
+</script>

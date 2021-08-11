@@ -1,0 +1,21 @@
+{
+  "label": {
+      "name": "Name",
+      "server": "Server",
+      "component": "Component",
+      "refresh": "Refresh",
+      "refresh_devices_list": "Refresh Components List"
+  },
+  "placeholder": {
+      "name": "Name"
+  },
+  "status": {
+      "no_server": "no server",
+      "no_device": "no device",
+      "no_connection": "no connection",
+      "connected": "connected"
+  },
+  "tip": {
+      "deploy": "<b>Important:</b> deploy server node to get Components list"
+  }
+}
