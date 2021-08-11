@@ -1,4 +1,5 @@
 <script type="text/x-red" data-template-name="discovery2mqtt-out">
+    <link rel="stylesheet" href="discovery2mqtt/static/css/multiple-select.min.css" type="text/css" />
     <link rel="stylesheet" href="discovery2mqtt/static/css/common.css" type="text/css" />
 
     <div class="form-row">
@@ -65,49 +66,53 @@
                 typeField: $('#node-input-payloadType'),
             });
 
-            d2m_list_command(node.component);
+            var selected = $('#node-input-component');
+            selected.multipleSelect({ filter: true });
+
+            setTimeout(function () {
+                d2m_list_command();
+            }, 100);
 
             $('#force-refresh').click(function () {
-                d2m_list_command(node.component, true);
+                d2m_list_command(true);
             });
 
-            function d2m_list_command(value = null, force = false) {
-                setTimeout(function () {
-                    var server = RED.nodes.node($('#node-input-server').val());
-                    var selected = $('#node-input-component');
+            function d2m_list_command(force = false) {
+                var server = RED.nodes.node($('#node-input-server').val());
 
-                    if (!server || !server.id) return;
+                if (!server || !server.id) return;
+                selected.multipleSelect('disable');
+                selected.children().remove();
 
-                    $.getJSON('discovery2mqtt/getComponents', {
-                        controllerID: server.id,
-                        forceRefresh: force
-                    }).done(function (data) {
-                        selected.empty();
-
-                        var optgroup = '';
-                        var groupHtml = '';
-                        data.sort(function(a, b) {
-                            if (a.control_name > b.control_name) {
-                                return 1;
-                            }
-                            if (a.control_name < b.control_name) {
-                                return -1;
-                            }
-                            return 0;
-                        }).forEach(function (c) {
-                            if (optgroup != c.control_name) {
-                                groupHtml = $('<optgroup/>', { label: c.control_name });
-                                groupHtml.appendTo(selected);
-                                optgroup = c.control_name;
-                            }
-                            if (c.command_topic) {
-                                $('<option value=\'' + JSON.stringify([c.command_topic, c.availability_topic]) + '\'>' + c.type + '/' + c.device_name + '</option>').appendTo(groupHtml);
-                            }
-                        });
-
-                        selected.val(value);
+                $.getJSON('discovery2mqtt/getComponents', {
+                    controllerID: server.id,
+                    forceRefresh: force
+                }).done(function (data) {
+                    var optgroup = '';
+                    var groupHtml = '';
+                    data.sort(function (a, b) {
+                        if (a.control_name > b.control_name) {
+                            return 1;
+                        }
+                        if (a.control_name < b.control_name) {
+                            return -1;
+                        }
+                        return 0;
+                    }).forEach(function (c) {
+                        if (optgroup != c.control_name) {
+                            groupHtml = $('<optgroup/>', { label: c.control_name });
+                            groupHtml.appendTo(selected);
+                            optgroup = c.control_name;
+                        }
+                        if (c.command_topic) {
+                            $('<option value=\'' + JSON.stringify([c.command_topic, c.availability_topic]) + '\'>' + c.device_name + ' (' + c.type + ')</option>').appendTo(groupHtml);
+                        }
                     });
-                }, 100);
+
+                    selected.multipleSelect('enable');
+                    selected.val(node.component);
+                    selected.multipleSelect('refresh');
+                });
             }
         },
         oneditsave: function () {

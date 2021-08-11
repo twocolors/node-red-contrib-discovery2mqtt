@@ -1,2 +1,14 @@
 .red-ui-editor .form-row select { width: 70%; }
 .d2m-width { width: 70%; }
+
+.ms-choice {
+  height:34px;
+  border: 1px solid rgb(204, 204, 204);
+  line-height: 34px !important;
+}
+.ms-search input {
+  width:100% !important;
+}
+.ms-drop li label {
+  width:20px !important;
+}
