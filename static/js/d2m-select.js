@@ -92,7 +92,11 @@ function d2m_getTopic(p) {
 
   for (const [key, value] of Object.entries(p)) {
     //topic
-    if (new RegExp('\_topic$').exec(key.toString())) {
+    // if (new RegExp('\_topic$').exec(key.toString())) {
+    //   array.push(value);
+    // }
+    var parts = key.split('_');
+    if (parts.pop() == 'topic') {
       array.push(value);
     }
   }

@@ -62,8 +62,9 @@ module.exports = function (RED) {
             var result = null;
 
             for (var i in node.config.component) {
-                var str = node.config.component[i].toString();
-                if (new RegExp('\/command$').exec(str)) {
+                var str   = node.config.component[i];
+                var parts = str.split('/');
+                if (parts.pop() == 'command') {
                     result = str;
                     break;
                 }
