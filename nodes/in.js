@@ -1,3 +1,4 @@
+const d2mHelper = require('../lib/d2mHelper.js');
 
 module.exports = function (RED) {
     class Discovery2mqttNodeIn {
@@ -96,8 +97,15 @@ module.exports = function (RED) {
                     if (node.firstMsg && !node.config.startMsg) {
                         node.firstMsg = false;
                     } else {
+                        let payload = data.payload;
+                        let payloadType = node.config.payloadType;
+                        if (payloadType && payloadType != 'raw') {
+                            payload = d2mHelper.payload2homekit(payloadType, payload);
+                        }
+
                         node.send({
-                            payload: data.payload,
+                            payload: payload,
+                            payload_raw: data.payload,
                             topic: data.topic
                         });
                     }

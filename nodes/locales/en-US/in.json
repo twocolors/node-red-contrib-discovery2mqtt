@@ -6,7 +6,8 @@
       "refresh": "Refresh",
       "refresh_devices_list": "Refresh Components List",
       "start_msg": "Start Output",
-      "start_msg_help": "Send value on start"
+      "start_msg_help": "Send value on start",
+      "payload_type": "Payload Output"
   },
   "placeholder": {
       "name": "Name"

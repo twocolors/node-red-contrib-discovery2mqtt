@@ -3,24 +3,28 @@
     <link rel="stylesheet" href="discovery2mqtt/static/css/common.css" type="text/css" />
 
     <div class="form-row">
-        <label for="node-input-name"><i class="fa fa-bookmark"></i> <span data-i18n="label.name"></span></label>
+        <label for="node-input-name" class="l-width"><i class="fa fa-bookmark"></i> <span data-i18n="label.name"></span></label>
         <input type="text" id="node-input-name" data-i18n="[placeholder]placeholder.name">
     </div>
     <div class="form-row">
-        <label for="node-input-server"><i class="fa fa-globe"></i> <span data-i18n="label.server"></span></label>
+        <label for="node-input-server" class="l-width"><i class="fa fa-globe"></i> <span data-i18n="label.server"></span></label>
         <input type="text" id="node-input-server">
     </div>
     <div class="form-row">
-        <label for="node-input-component"><i class="fa fa-crosshairs"></i> <span data-i18n="label.component"></span></label>
+        <label for="node-input-component" class="l-width"><i class="fa fa-crosshairs"></i> <span data-i18n="label.component"></span></label>
         <select id="node-input-component" data-single="true"></select>
         <input type="hidden" id="node-input-friendly_name">
     </div>
     <div class="form-row">
-        <label for="force-refresh"><i class="fa fa-refresh"></i> <span data-i18n="label.refresh"></span></label>
+        <label for="force-refresh" class="l-width"><i class="fa fa-refresh"></i> <span data-i18n="label.refresh"></span></label>
         <a class="red-ui-button d2m-width" id="force-refresh" name="force-refresh"><span data-i18n="label.refresh_devices_list"></span></a>
     </div>
     <div class="form-row">
-        <label for='node-input-startMsg'><i class='fa fa-share-square'></i> <span data-i18n="label.start_msg"></span></label>
+        <label for="node-input-payloadType" class="l-width"><i class="fa fa-tag"></i> <span data-i18n="label.payload_type"></span></label>
+        <select id="node-input-payloadType" data-single="true"></select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-startMsg" class="l-width"><i class='fa fa-share-square'></i> <span data-i18n="label.start_msg"></span></label>
         <input type="checkbox" id="node-input-startMsg" checked="checked" style="display: inline-block; width: auto; vertical-align: top;"> <span data-i18n="label.start_msg_help"></span></input>
     </div>
     <div class="form-tips" data-i18n="[html]tip.deploy"></div>
@@ -35,6 +39,7 @@
             server: { type: 'discovery2mqtt-server', required: true },
             component: { value: null, required: true },
             friendly_name: { value: null },
+            payloadType: { value: 'raw'},
             startMsg: { value: true },
         },
         inputs: 0,
@@ -57,65 +62,13 @@
         oneditprepare: function () {
             var node = this;
 
-            var selected = $('#node-input-component');
-            selected.multipleSelect({ filter: true });
-
             setTimeout(function () {
-                d2m_list_state();
+                d2m_getComponentList(node.component);
             }, 100);
 
-            $('#force-refresh').click(function () {
-                d2m_list_state(true);
-            });
-
-            //this bad hack ...
-            // $('#node-input-server').change(function () {
-            //     d2m_list_state(node.component, true);
-            // });
-
-            function d2m_list_state(force = false) {
-                var server = RED.nodes.node($('#node-input-server').val());
-
-                if (!server || !server.id) return;
-                selected.multipleSelect('disable');
-                selected.children().remove();
-
-                $.getJSON('discovery2mqtt/getComponents', {
-                    controllerID: server.id,
-                    forceRefresh: force
-                }).done(function (data) {
-                    var optgroup = '';
-                    var groupHtml = '';
-                    data.sort(function (a, b) {
-                        if (a.control_name > b.control_name) {
-                            return 1;
-                        }
-                        if (a.control_name < b.control_name) {
-                            return -1;
-                        }
-                        return 0;
-                    }).forEach(function (c) {
-                        if (optgroup != c.control_name) {
-                            groupHtml = $('<optgroup/>', { label: c.control_name });
-                            groupHtml.appendTo(selected);
-                            optgroup = c.control_name;
-                        }
-                        if (c.state_topic) {
-                            $('<option value=\'' + JSON.stringify([c.state_topic, c.availability_topic]) + '\'>' + c.device_name + ' (' + c.type + ')</option>').appendTo(groupHtml);
-                        }
-                    });
-
-                    selected.multipleSelect('enable');
-                    selected.val(node.component);
-                    selected.multipleSelect('refresh');
-                });
-            }
-        },
-        oneditsave: function () {
-            var selectedOption = $('#node-input-component option:selected');
-            if (selectedOption) {
-                $('#node-input-friendly_name').val(selectedOption.text());
-            }
+            setTimeout(function () {
+                d2m_getTypeList(node.payloadType);
+            }, 350);
         }
     });
 </script>

@@ -20,7 +20,7 @@
         <a class="red-ui-button d2m-width" id="force-refresh" name="force-refresh"><span data-i18n="label.refresh_devices_list"></span></a>
     </div>
     <div class="form-row">
-        <label for="node-input-payload" class="l-width"><i class="fa fa-envelope"></i> <span data-i18n="label.payload"></span></label>
+        <label for="node-input-payload"><i class="fa fa-envelope"></i> <span data-i18n="label.payload"></span></label>
         <input type="text" id="node-input-payload" style="width:70%">
         <input type="hidden" id="node-input-payloadType">
     </div>
@@ -66,60 +66,9 @@
                 typeField: $('#node-input-payloadType'),
             });
 
-            var selected = $('#node-input-component');
-            selected.multipleSelect({ filter: true });
-
             setTimeout(function () {
-                d2m_list_command();
+                d2m_getComponentList(node.component);
             }, 100);
-
-            $('#force-refresh').click(function () {
-                d2m_list_command(true);
-            });
-
-            function d2m_list_command(force = false) {
-                var server = RED.nodes.node($('#node-input-server').val());
-
-                if (!server || !server.id) return;
-                selected.multipleSelect('disable');
-                selected.children().remove();
-
-                $.getJSON('discovery2mqtt/getComponents', {
-                    controllerID: server.id,
-                    forceRefresh: force
-                }).done(function (data) {
-                    var optgroup = '';
-                    var groupHtml = '';
-                    data.sort(function (a, b) {
-                        if (a.control_name > b.control_name) {
-                            return 1;
-                        }
-                        if (a.control_name < b.control_name) {
-                            return -1;
-                        }
-                        return 0;
-                    }).forEach(function (c) {
-                        if (optgroup != c.control_name) {
-                            groupHtml = $('<optgroup/>', { label: c.control_name });
-                            groupHtml.appendTo(selected);
-                            optgroup = c.control_name;
-                        }
-                        if (c.command_topic) {
-                            $('<option value=\'' + JSON.stringify([c.command_topic, c.availability_topic]) + '\'>' + c.device_name + ' (' + c.type + ')</option>').appendTo(groupHtml);
-                        }
-                    });
-
-                    selected.multipleSelect('enable');
-                    selected.val(node.component);
-                    selected.multipleSelect('refresh');
-                });
-            }
-        },
-        oneditsave: function () {
-            var selectedOption = $('#node-input-component option:selected');
-            if (selectedOption) {
-                $('#node-input-friendly_name').val(selectedOption.text());
-            }
         }
     });
 </script>

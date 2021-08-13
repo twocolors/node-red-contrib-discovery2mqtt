@@ -1,5 +1,9 @@
 .red-ui-editor .form-row select { width: 70%; }
 .d2m-width { width: 70%; }
+.form-row label.l-width {
+  width: 25%;
+  min-width: 120px;
+  }
 
 .ms-choice {
   height:34px;
