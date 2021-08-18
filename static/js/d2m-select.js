@@ -11,54 +11,54 @@ function d2m_getComponentList(nodeValue) {
         controllerID: controller.id,
         forceRefresh: refresh
       })
-      .done(function(data) {
-        // remove all
-        componentElm.children().remove();
-        try {
-          // sort data
-          data.sort(function (a, b) {
-            if (a.control_name > b.control_name) { return  1; }
-            if (a.control_name < b.control_name) { return -1; }
-            return 0;
-          });
+        .done(function (data) {
+          // remove all
+          componentElm.children().remove();
+          try {
+            // sort data
+            data.sort(function (a, b) {
+              if (a.control_name > b.control_name) { return 1; }
+              if (a.control_name < b.control_name) { return -1; }
+              return 0;
+            });
 
-          let optgroup  = '';
-          let htmlgroup = '';
+            let optgroup = '';
+            let htmlgroup = '';
 
-          data.forEach(function (p) {
-            if (optgroup != p.control_name) {
-              htmlgroup = $('<optgroup/>', { label: p.control_name });
-              htmlgroup.appendTo(componentElm);
-              optgroup = p.control_name;
-            }
+            data.forEach(function (p) {
+              if (optgroup != p.control_name) {
+                htmlgroup = $('<optgroup/>', { label: p.control_name });
+                htmlgroup.appendTo(componentElm);
+                optgroup = p.control_name;
+              }
 
-            let topic = d2m_getTopic(p);
-            let friendly_name = p.control_name + '/' + p.device_name;
-            let name = p.device_name + ' (' + p.type + ')';
-            let homekit = p.homekit || '';
+              let topic = d2m_getTopic(p);
+              let friendly_name = p.control_name + '/' + p.device_name;
+              let name = p.device_name + ' (' + p.type + ')';
+              let homekit = p.homekit || '';
 
-            let option = '';
-            // bad hack for in / out node
-            let startMsg = $('#node-input-startMsg').length;
-            if (startMsg) {
-              option = '<option value=\'' + topic + '\' data-friendly_name="' + friendly_name + '" data-homekit="' + homekit + '">' + name + '</option>';
-            } else if (!startMsg && p.command_topic) {
-              option = '<option value=\'' + topic + '\' data-friendly_name="' + friendly_name + '">' + name + '</option>';
-            }
-            $(option).appendTo(htmlgroup);
-          });
+              let option = '';
+              // bad hack for in / out node
+              let startMsg = $('#node-input-startMsg').length;
+              if (startMsg) {
+                option = '<option value=\'' + topic + '\' data-friendly_name="' + friendly_name + '" data-homekit="' + homekit + '">' + name + '</option>';
+              } else if (!startMsg && p.command_topic) {
+                option = '<option value=\'' + topic + '\' data-friendly_name="' + friendly_name + '">' + name + '</option>';
+              }
+              $(option).appendTo(htmlgroup);
+            });
 
-          componentElm.val(nodeValue);
-          componentElm.multipleSelect('refresh');
-        } catch (_) {}
-      });
+            componentElm.val(nodeValue);
+            componentElm.multipleSelect('refresh');
+          } catch (_) { }
+        });
     }
   }
 
-  var serverElm    = $('#node-input-server');
+  var serverElm = $('#node-input-server');
   var componentElm = $('#node-input-component');
-  var refreshElm   = $('#force-refresh');
-  var friendlyElm  = $('#node-input-friendly_name');
+  var refreshElm = $('#force-refresh');
+  var friendlyElm = $('#node-input-friendly_name');
 
   // init multiselect
   componentElm.multipleSelect({ filter: true });
@@ -70,17 +70,17 @@ function d2m_getComponentList(nodeValue) {
   d2m_updateComponentList(value);
 
   // change server
-  serverElm.change(function() {
+  serverElm.change(function () {
     d2m_updateComponentList(value, true);
   });
 
   // click refresh
-  refreshElm.click(function() {
+  refreshElm.click(function () {
     d2m_updateComponentList(value, true);
   });
 
   // change component
-  componentElm.change(function() {
+  componentElm.change(function () {
     // update friendly_name
     let friendly_name = $(this).find(":selected").attr('data-friendly_name');
     friendlyElm.val(friendly_name);
@@ -125,6 +125,7 @@ function d2m_getTypeList(nodeValue) {
 
   var typeElm = $('#node-input-payloadType');
   var componentElm = $('#node-input-component');
+  var refreshElm = $('#force-refresh');
 
   // init multiselect
   typeElm.multipleSelect();
@@ -135,8 +136,13 @@ function d2m_getTypeList(nodeValue) {
   // init
   d2m_updateTypeList(value);
 
+  // click refresh
+  refreshElm.click(function () {
+    d2m_updateTypeList(value);
+  });
+
   // change component
-  componentElm.change(function() {
+  componentElm.change(function () {
     d2m_updateTypeList(value);
   });
 }
