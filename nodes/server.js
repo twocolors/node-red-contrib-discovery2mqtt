@@ -71,7 +71,7 @@ module.exports = function (RED) {
             node.log('MQTT Connected (' + node.config.host + ')');
             node.getComponents(function () {
                 node.subscribeMQTT();
-            });
+            }, true);
         }
 
         onMQTTClose() {
@@ -173,6 +173,7 @@ module.exports = function (RED) {
                     if (typeof (callback) === "function") {
                         callback(node.components);
                     }
+                    return node.components;
                 });
 
                 client.on('message', function (topic, message) {
