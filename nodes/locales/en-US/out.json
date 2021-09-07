@@ -5,7 +5,8 @@
       "component": "Component",
       "refresh": "Refresh",
       "refresh_devices_list": "Refresh Components List",
-      "payload": "Payload"
+      "payload": "Payload",
+      "retain": "Retain"
   },
   "placeholder": {
       "name": "Name"

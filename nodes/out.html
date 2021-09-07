@@ -22,7 +22,11 @@
     <div class="form-row">
         <label for="node-input-payload"><i class="fa fa-envelope"></i> <span data-i18n="label.payload"></span></label>
         <input type="text" id="node-input-payload" style="width:70%">
-        <input type="hidden" id="node-input-payloadType">
+        <input type="hidden" id="node-input-payload_type">
+    </div>
+    <div class="form-row">
+        <label for="node-input-retain"><i class="fa fa-history"></i> <span data-i18n="label.retain"></span></label>
+        <input type="checkbox" id="node-input-retain" style="display: inline-block; width: auto; vertical-align: top;"></input>
     </div>
     <div class="form-tips" data-i18n="[html]tip.deploy"></div>
 </script>
@@ -37,7 +41,8 @@
             component: { value: null, required: true },
             friendly_name: { value: null },
             payload: { value: 'payload' },
-            payloadType: { value: 'msg' },
+            payload_type: { value: 'msg' },
+            retain: { value: false },
         },
         inputs: 1,
         outputs: 0,
@@ -63,7 +68,7 @@
                 types: ['flow', 'global', 'str', 'env', 'msg'],
                 default: 'msg',
                 value: 'payload',
-                typeField: $('#node-input-payloadType'),
+                typeField: $('#node-input-payload_type'),
             });
 
             setTimeout(function () {

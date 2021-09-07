@@ -20,8 +20,8 @@
         <a class="red-ui-button d2m-width" id="force-refresh" name="force-refresh"><span data-i18n="label.refresh_devices_list"></span></a>
     </div>
     <div class="form-row">
-        <label for="node-input-payloadType" class="l-width"><i class="fa fa-tag"></i> <span data-i18n="label.payload_type"></span></label>
-        <select id="node-input-payloadType" data-single="true"></select>
+        <label for="node-input-payload_type" class="l-width"><i class="fa fa-tag"></i> <span data-i18n="label.payload_type"></span></label>
+        <select id="node-input-payload_type" data-single="true"></select>
     </div>
     <div class="form-row">
         <label for="node-input-startMsg" class="l-width"><i class='fa fa-share-square'></i> <span data-i18n="label.start_msg"></span></label>
@@ -39,7 +39,7 @@
             server: { type: 'discovery2mqtt-server', required: true },
             component: { value: null, required: true },
             friendly_name: { value: null },
-            payloadType: { value: 'raw'},
+            payload_type: { value: 'raw'},
             startMsg: { value: true },
         },
         inputs: 0,
@@ -67,7 +67,7 @@
             }, 100);
 
             setTimeout(function () {
-                d2m_getTypeList(node.payloadType);
+                d2m_getTypeList(node.payload_type);
             }, 350);
         }
     });

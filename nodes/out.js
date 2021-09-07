@@ -19,10 +19,10 @@ module.exports = function (RED) {
                 node.on('input', function (message) {
                     var topic = node.hasCommand();
                     if (topic) {
-                        var payload = RED.util.evaluateNodeProperty(node.config.payload, node.config.payloadType, node, message);
+                        var payload = RED.util.evaluateNodeProperty(node.config.payload, node.config.payload_type, node, message);
                         if (payload) {
                             // node.log('Published to mqtt topic: ' + topic + ' : ' + payload.toString());
-                            node.server.mqtt.publish(topic, payload.toString(), {retain: true});
+                            node.server.mqtt.publish(topic, payload.toString(), {retain: node.config.retain});
 
                             node.last_change = new Date().getTime();
 

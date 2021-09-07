@@ -123,7 +123,7 @@ function d2m_getTypeList(nodeValue) {
     typeElm.multipleSelect('refresh');
   }
 
-  var typeElm = $('#node-input-payloadType');
+  var typeElm = $('#node-input-payload_type');
   var componentElm = $('#node-input-component');
   var refreshElm = $('#force-refresh');
 

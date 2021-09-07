@@ -98,9 +98,9 @@ module.exports = function (RED) {
                         node.firstMsg = false;
                     } else {
                         let payload = data.payload;
-                        let payloadType = node.config.payloadType;
-                        if (payloadType && payloadType != 'raw') {
-                            payload = d2mHelper.payload2homekit(payloadType, payload);
+                        let payload_type = node.config.payload_type;
+                        if (payload_type && payload_type != 'raw') {
+                            payload = d2mHelper.payload2homekit(payload_type, payload);
                         }
 
                         node.send({
