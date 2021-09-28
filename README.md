@@ -7,7 +7,7 @@ Available nodes are:
 * discovery2mqtt-in
 * discovery2mqtt-out
 
-Support component:
+Support components:
 * switch
 * sensor
 
