@@ -33,17 +33,17 @@ function d2m_getComponentList(nodeValue) {
               }
 
               let topic = d2m_getTopic(p);
-              let friendly_name = p.control_name + '/' + p.device_name;
-              let name = p.device_name + ' (' + p.type + ')';
+              let friendly_name = p.device_name + ' (' + p.control_name + ')';
+              let name = p.device_name + ' (' + p.control_name + '.' + p.type + ')';
               let homekit = p.homekit || '';
 
               let option = '';
               // bad hack for in / out node
               let startMsg = $('#node-input-startMsg').length;
               if (startMsg) {
-                option = '<option value=\'' + topic + '\' data-friendly_name="' + friendly_name + '" data-homekit="' + homekit + '">' + name + '</option>';
+                option = '<option value=\'' + topic + '\' data-name="' + friendly_name + '" data-homekit="' + homekit + '">' + name + '</option>';
               } else if (!startMsg && p.command_topic) {
-                option = '<option value=\'' + topic + '\' data-friendly_name="' + friendly_name + '">' + name + '</option>';
+                option = '<option value=\'' + topic + '\' data-name="' + friendly_name + '">' + name + '</option>';
               }
               $(option).appendTo(htmlgroup);
             });
@@ -58,7 +58,7 @@ function d2m_getComponentList(nodeValue) {
   var serverElm = $('#node-input-server');
   var componentElm = $('#node-input-component');
   var refreshElm = $('#force-refresh');
-  var friendlyElm = $('#node-input-friendly_name');
+  var nameElm = $('#node-input-name');
 
   // init multiselect
   componentElm.multipleSelect({ filter: true });
@@ -81,9 +81,11 @@ function d2m_getComponentList(nodeValue) {
 
   // change component
   componentElm.change(function () {
-    // update friendly_name
-    let friendly_name = $(this).find(":selected").attr('data-friendly_name');
-    friendlyElm.val(friendly_name);
+    // update name
+    let name = $(this).find(":selected").attr('data-name');
+    if(!nameElm.val()) {
+      nameElm.val(name);
+    }
   });
 }
 
