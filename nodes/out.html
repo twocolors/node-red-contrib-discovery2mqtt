@@ -27,6 +27,10 @@
         <label for="node-input-retain"><i class="fa fa-history"></i> <span data-i18n="label.retain"></span></label>
         <input type="checkbox" id="node-input-retain" style="display: inline-block; width: auto; vertical-align: top;"></input>
     </div>
+    <div class="form-row">
+        <label for="node-input-indicator"><i class='fa fa-toggle-on'></i> <span data-i18n="label.indicator"></span></label>
+        <input type="checkbox" id="node-input-indicator" checked="checked" style="display: inline-block; width: auto; vertical-align: top;"> <span data-i18n="label.indicator_help"></span></input>
+    </div>
     <div class="form-tips" data-i18n="[html]tip.deploy"></div>
 </script>
 
@@ -41,6 +45,7 @@
             payload: { value: 'payload' },
             payload_type: { value: 'msg' },
             retain: { value: false },
+            indicator: { value: true },
         },
         inputs: 1,
         outputs: 0,

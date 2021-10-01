@@ -105,7 +105,9 @@ module.exports = function (RED) {
                         text = text.substring(0, 4) + '...';
                     }
 
-                    text = text + ' 🕑 ' + new Date(last_seen).toLocaleDateString('ru-RU') + ' ' + new Date(last_seen).toLocaleTimeString('ru-RU');
+                    if (node.config.indicator) {
+                        text = text + ' 🕑 ' + new Date(last_seen).toLocaleDateString('ru-RU') + ' ' + new Date(last_seen).toLocaleTimeString('ru-RU');
+                    }
 
                     node.status({
                         fill: 'green',

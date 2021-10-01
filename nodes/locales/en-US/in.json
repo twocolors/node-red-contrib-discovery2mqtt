@@ -7,7 +7,9 @@
       "refresh_devices_list": "Refresh Components List",
       "start_msg": "Start Output",
       "start_msg_help": "Send value on start",
-      "payload_type": "Payload Output"
+      "payload_type": "Payload Output",
+      "indicator": "Indicator",
+      "indicator_help": "Show date in status (indicator)"
   },
   "placeholder": {
       "name": "Name"

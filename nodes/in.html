@@ -26,6 +26,10 @@
         <label for="node-input-start_msg" class="l-width"><i class='fa fa-share-square'></i> <span data-i18n="label.start_msg"></span></label>
         <input type="checkbox" id="node-input-start_msg" checked="checked" style="display: inline-block; width: auto; vertical-align: top;"> <span data-i18n="label.start_msg_help"></span></input>
     </div>
+    <div class="form-row">
+        <label for="node-input-indicator" class="l-width"><i class='fa fa-toggle-on'></i> <span data-i18n="label.indicator"></span></label>
+        <input type="checkbox" id="node-input-indicator" style="display: inline-block; width: auto; vertical-align: top;"> <span data-i18n="label.indicator_help"></span></input>
+    </div>
     <div class="form-tips" data-i18n="[html]tip.deploy"></div>
 </script>
 
@@ -39,6 +43,7 @@
             component: { value: null, required: true },
             payload_type: { value: 'raw'},
             start_msg: { value: true },
+            indicator: { value: true },
         },
         inputs: 0,
         outputs: 1,
