@@ -8,9 +8,7 @@ module.exports = function (RED) {
             var node = this;
             node.config = config;
             node.server = RED.nodes.getNode(node.config.server);
-            node.statusStr = null;
-            node.statusTimer = null;
-            node.firstMsg = true;
+            node.first_msg = true;
 
             if (typeof (node.config.component) === 'string') {
                 node.config.component = JSON.parse(node.config.component); //for compatible
@@ -79,27 +77,48 @@ module.exports = function (RED) {
 
             if (node.hasComponent(data.topic)) {
                 var parts = data.topic.split('/');
-
-                clearTimeout(node.statusTimer);
-
                 var topic = parts.pop();
-                if (topic == 'status') {
-                    node.statusStr = data.payload;
-                }
 
-                if (topic == 'state') {
+                if (topic == 'status') {
                     node.status({
-                        fill: 'green',
+                        fill: (data.payload == 'online' ? 'green' : 'grey'),
                         shape: 'dot',
                         text: data.payload
                     });
+                }
 
-                    if (node.firstMsg && !node.config.startMsg) {
-                        node.firstMsg = false;
+                if (topic == 'state') {
+                    let text = data.payload.toString();
+                    let last_seen = new Date().getTime();;
+
+                    let payload_type = node.config.payload_type;
+                    if (payload_type == 'TemperatureSensor') {
+                        text = '🌡️ ' + text;
+                    }
+                    else if (payload_type == 'HumiditySensor') {
+                        text = '💧 ' + text;
+                    }
+                    else if (payload_type == 'Battery') {
+                        text = '🔋 ' + text;
+                    }
+                    else if (text.length > 4) {
+                        text = text.substring(0, 4) + '...';
+                    }
+
+                    text = text + ' 🕑 ' + new Date(last_seen).toLocaleDateString('ru-RU') + ' ' + new Date(last_seen).toLocaleTimeString('ru-RU');
+
+                    node.status({
+                        fill: 'green',
+                        shape: 'ring',
+                        text: text
+                    });
+
+                    if (node.first_msg && !node.config.start_msg) {
+                        node.first_msg = false;
                     } else {
                         let payload = data.payload;
                         let payload_type = node.config.payload_type;
-                        if (payload_type && payload_type != 'raw') {
+                        if (payload_type != 'raw') {
                             payload = d2mHelper.payload2homekit(payload_type, payload);
                         }
 
@@ -111,16 +130,6 @@ module.exports = function (RED) {
                     }
                 }
 
-                if (node.statusStr) {
-                    let color = node.statusStr == 'online' ? 'green' : 'grey';
-                    node.statusTimer = setTimeout(function () {
-                        node.status({
-                            fill: color,
-                            shape: 'dot',
-                            text: node.statusStr
-                        });
-                    }, 3 * 1000);
-                }
             }
         }
 

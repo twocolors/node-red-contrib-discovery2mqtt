@@ -1,4 +1,4 @@
-function d2m_getComponentList(nodeValue) {
+function d2m_getComponentList(node, nodeValue) {
 
   function d2m_updateComponentList(nodeValue, refresh = false) {
     //disable component element
@@ -38,11 +38,9 @@ function d2m_getComponentList(nodeValue) {
               let homekit = p.homekit || '';
 
               let option = '';
-              // bad hack for in / out node
-              let startMsg = $('#node-input-startMsg').length;
-              if (startMsg) {
+              if (node.type == 'discovery2mqtt-in') {
                 option = '<option value=\'' + topic + '\' data-name="' + friendly_name + '" data-homekit="' + homekit + '">' + name + '</option>';
-              } else if (!startMsg && p.command_topic) {
+              } else if (node.type == 'discovery2mqtt-out' && p.command_topic) {
                 option = '<option value=\'' + topic + '\' data-name="' + friendly_name + '">' + name + '</option>';
               }
               $(option).appendTo(htmlgroup);
@@ -116,7 +114,7 @@ function d2m_getTypeList(nodeValue) {
     $('<option value="raw">Raw</option>').appendTo(typeElm);
     let homekit = $('#node-input-component option:selected').attr('data-homekit');
     if (homekit) {
-      $('<option value="' + homekit + '">' + homekit + '</option>').appendTo(typeElm);
+      $('<option value="' + homekit + '">' + homekit + ' (HomeKit)</option>').appendTo(typeElm);
     }
 
     nodeValue = homekit != nodeValue ? 'raw' : homekit;

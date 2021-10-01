@@ -7,7 +7,6 @@ module.exports = function (RED) {
             var node = this;
             node.config = config;
             node.server = RED.nodes.getNode(node.config.server);
-            node.last_change = null;
 
             if (typeof (node.config.component) === 'string') {
                 node.config.component = JSON.parse(node.config.component); //for compatible
@@ -24,13 +23,18 @@ module.exports = function (RED) {
                             // node.log('Published to mqtt topic: ' + topic + ' : ' + payload.toString());
                             node.server.mqtt.publish(topic, payload.toString(), {retain: node.config.retain});
 
-                            node.last_change = new Date().getTime();
+                            let text = payload.toString();
+                            let last_seen = new Date().getTime();;
 
-                            var text = payload.toString() + ' [' + new Date(node.last_change).toLocaleDateString('ru-RU') + ' ' + new Date(node.last_change).toLocaleTimeString('ru-RU')+']';
+                            if (text.length > 4) {
+                                text = text.substring(0, 4) + '...';
+                            }
+
+                            text = text + ' 🕑 ' + new Date(last_seen).toLocaleDateString('ru-RU') + ' ' + new Date(last_seen).toLocaleTimeString('ru-RU');
 
                             node.status({
                                 fill: "green",
-                                shape: "dot",
+                                shape: "ring",
                                 text: text
                             });
                         } else {
