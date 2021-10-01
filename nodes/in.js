@@ -9,6 +9,8 @@ module.exports = function (RED) {
             node.config = config;
             node.server = RED.nodes.getNode(node.config.server);
             node.first_msg = true;
+            node.clean_timer = null;
+            node.last_status = null;
 
             if (typeof (node.config.component) === 'string') {
                 node.config.component = JSON.parse(node.config.component); //for compatible
@@ -76,14 +78,17 @@ module.exports = function (RED) {
             var node = this;
 
             if (node.hasComponent(data.topic)) {
+                clearTimeout(node.clean_timer);
+
                 var parts = data.topic.split('/');
                 var topic = parts.pop();
 
                 if (topic == 'status') {
+                    node.last_status = data.payload;
                     node.status({
-                        fill: (data.payload == 'online' ? 'green' : 'grey'),
+                        fill: (node.last_status == 'online' ? 'green' : 'grey'),
                         shape: 'dot',
-                        text: data.payload
+                        text: node.last_status
                     });
                 }
 
@@ -114,6 +119,16 @@ module.exports = function (RED) {
                         shape: 'ring',
                         text: text
                     });
+
+                    if (node.last_status) {
+                        node.clean_timer = setTimeout(function () {
+                            node.status({
+                                fill: (node.last_status == 'online' ? 'green' : 'grey'),
+                                shape: 'dot',
+                                text: node.last_status
+                            });
+                        }, 7 * 1000);
+                    }
 
                     if (node.first_msg && !node.config.start_msg) {
                         node.first_msg = false;
