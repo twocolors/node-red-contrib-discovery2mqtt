@@ -127,7 +127,7 @@ module.exports = function (RED) {
                                 shape: 'dot',
                                 text: node.last_status
                             });
-                        }, 7 * 1000);
+                        }, 3.5 * 1000);
                     }
 
                     if (node.first_msg && !node.config.start_msg) {
