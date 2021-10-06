@@ -4,7 +4,7 @@ module.exports = function (RED) {
         constructor(config) {
             RED.nodes.createNode(this, config);
 
-            var node = this;
+            let node = this;
             node.config = config;
             node.server = RED.nodes.getNode(node.config.server);
 
@@ -16,9 +16,9 @@ module.exports = function (RED) {
                 node.status({});
 
                 node.on('input', function (message) {
-                    var topic = node.hasCommand();
+                    let topic = node.hasCommand();
                     if (topic) {
-                        var payload = RED.util.evaluateNodeProperty(node.config.payload, node.config.payload_type, node, message);
+                        let payload = RED.util.evaluateNodeProperty(node.config.payload, node.config.payload_type, node, message);
                         if (payload) {
                             // node.log('Published to mqtt topic: ' + topic + ' : ' + payload.toString());
                             node.server.mqtt.publish(topic, payload.toString(), {retain: node.config.retain});
@@ -64,14 +64,15 @@ module.exports = function (RED) {
         }
 
         hasCommand() {
-            var node = this;
-            var result = null;
+            let node = this;
+            let result = false;
 
-            for (var i in node.config.component) {
-                var str   = node.config.component[i];
-                var parts = str.split('/');
-                if (parts.pop() == 'command') {
-                    result = str;
+            for (let i in node.config.component) {
+                let parts = node.config.component[i].split('/');
+                let topic = parts.pop();
+
+                if (topic === 'command') {
+                    result = node.config.component[i];
                     break;
                 }
             }

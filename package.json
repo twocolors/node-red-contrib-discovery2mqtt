@@ -9,7 +9,8 @@
       "api": "api.js",
       "server": "nodes/server.js",
       "in": "nodes/in.js",
-      "out": "nodes/out.js"
+      "out": "nodes/out.js",
+      "status": "nodes/status.js"
     }
   },
   "dependencies": {

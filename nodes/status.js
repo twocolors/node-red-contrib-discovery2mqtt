@@ -1,7 +1,5 @@
-const d2mHelper = require('../lib/d2mHelper.js');
-
 module.exports = function (RED) {
-    class Discovery2mqttNodeIn {
+    class Discovery2mqttNodeStatus {
         constructor(config) {
             RED.nodes.createNode(this, config);
 
@@ -9,8 +7,6 @@ module.exports = function (RED) {
             node.config = config;
             node.server = RED.nodes.getNode(node.config.server);
             node.first_msg = true;
-            node.clean_timer = null;
-            node.last_status = null;
 
             if (typeof (node.config.component) === 'string') {
                 node.config.component = JSON.parse(node.config.component); //for compatible
@@ -32,12 +28,13 @@ module.exports = function (RED) {
 
                 if (typeof (node.server.mqtt) === 'object') {
                     node.onConnect();
+                    node.onGet();
                 }
             } else {
                 node.status({
                     fill: 'red',
                     shape: 'dot',
-                    text: 'node-red-contrib-discovery2mqtt/in:status.no_server'
+                    text: 'node-red-contrib-discovery2mqtt/status:status.no_server'
                 });
             }
         }
@@ -46,7 +43,7 @@ module.exports = function (RED) {
             this.status({
                 fill: 'green',
                 shape: 'dot',
-                text: 'node-red-contrib-discovery2mqtt/in:status.connected'
+                text: 'node-red-contrib-discovery2mqtt/status:status.connected'
             });
         }
 
@@ -54,7 +51,7 @@ module.exports = function (RED) {
             this.status({
                 fill: 'red',
                 shape: 'dot',
-                text: 'node-red-contrib-discovery2mqtt/in:status.no_connection'
+                text: 'node-red-contrib-discovery2mqtt/status:status.no_connection'
             });
         }
 
@@ -78,76 +75,74 @@ module.exports = function (RED) {
             let node = this;
 
             if (node.hasComponent(data.topic)) {
-                clearTimeout(node.clean_timer);
 
                 let parts = data.topic.split('/');
                 let topic = parts.pop();
 
                 if (topic == 'status') {
-                    node.last_status = data.payload;
                     node.status({
-                        fill: (node.last_status == 'online' ? 'green' : 'grey'),
-                        shape: 'dot',
-                        text: node.last_status
-                    });
-                }
-
-                if (topic == 'state') {
-                    let text = data.payload.toString();
-                    let last_seen = new Date().getTime();;
-
-                    let payload_type = node.config.payload_type;
-                    if (payload_type == 'TemperatureSensor') {
-                        text = '🌡️ ' + text;
-                    }
-                    else if (payload_type == 'HumiditySensor') {
-                        text = '💧 ' + text;
-                    }
-                    else if (payload_type == 'Battery') {
-                        text = '🔋 ' + text;
-                    }
-                    else if (text.length > 4) {
-                        text = text.substring(0, 4) + '...';
-                    }
-
-                    if (node.config.indicator) {
-                        text = text + ' 🕑 ' + new Date(last_seen).toLocaleDateString('ru-RU') + ' ' + new Date(last_seen).toLocaleTimeString('ru-RU');
-                    }
-
-                    node.status({
-                        fill: 'green',
+                        fill: (data.payload == 'online' ? 'green' : 'grey'),
                         shape: 'ring',
-                        text: text
+                        text: data.payload
                     });
 
-                    if (node.last_status) {
-                        node.clean_timer = setTimeout(function () {
-                            node.status({
-                                fill: (node.last_status == 'online' ? 'green' : 'grey'),
-                                shape: 'dot',
-                                text: node.last_status
-                            });
-                        }, 3.5 * 1000);
-                    }
-
-                    if (node.first_msg && !node.config.start_msg) {
+                    if (node.first_msg) {
                         node.first_msg = false;
                     } else {
-                        let payload = data.payload;
-                        let payload_type = node.config.payload_type;
-                        if (payload_type != 'raw') {
-                            payload = d2mHelper.payload2homekit(payload_type, payload);
-                        }
-
                         node.send({
-                            payload: payload,
-                            payload_raw: data.payload,
+                            payload: data.payload,
                             topic: data.topic
                         });
                     }
                 }
 
             }
+        }
+
+        onGet() {
+            let node = this;
+
+            let timeout = null;
+            let client = node.server.connectMQTT('get');
+
+            client.on('connect', function () {
+                timeout = setTimeout(function () {
+                    client.end(true);
+                }, 5000);
+
+                let topic = node.hasStatus();
+                client.subscribe(topic, function (error) {
+                    if (error) {
+                        node.first_msg = false;
+                        client.end(true);
+                    }
+                });
+            });
+
+            client.on('error', function () {
+                client.end(true);
+            });
+
+            client.on('end', function () {
+                clearTimeout(timeout);
+            });
+
+            client.on('message', function (topic, message) {
+                let messageString = message.toString();
+
+                node.status({
+                    fill: (messageString == 'online' ? 'green' : 'grey'),
+                    shape: 'ring',
+                    text: messageString
+                });
+
+                node.send({
+                    payload: messageString,
+                    topic: topic
+                });
+
+                client.end(true);
+            });
         }
 
         hasComponent(component) {
@@ -164,6 +159,23 @@ module.exports = function (RED) {
             return result;
         }
 
+        hasStatus() {
+            let node = this;
+            let result = false;
+
+            for (let i in node.config.component) {
+                let parts = node.config.component[i].split('/');
+                let topic = parts.pop();
+
+                if (topic === 'status') {
+                    result = node.config.component[i];
+                    break;
+                }
+            }
+
+            return result;
+        }
+
     }
-    RED.nodes.registerType('discovery2mqtt-in', Discovery2mqttNodeIn);
+    RED.nodes.registerType('discovery2mqtt-status', Discovery2mqttNodeStatus);
 };

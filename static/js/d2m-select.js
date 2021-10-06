@@ -24,12 +24,15 @@ function d2m_getComponentList(node, nodeValue) {
 
             let optgroup = '';
             let htmlgroup = '';
+            let statusgroup = '';
 
             data.forEach(function (p) {
-              if (optgroup != p.control_name) {
-                htmlgroup = $('<optgroup/>', { label: p.control_name });
-                htmlgroup.appendTo(componentElm);
-                optgroup = p.control_name;
+              if (node.type != 'discovery2mqtt-status') {
+                if (optgroup != p.control_name) {
+                  htmlgroup = $('<optgroup/>', { label: p.control_name });
+                  htmlgroup.appendTo(componentElm);
+                  optgroup = p.control_name;
+                }
               }
 
               let topic = d2m_getTopic(p);
@@ -40,10 +43,17 @@ function d2m_getComponentList(node, nodeValue) {
               let option = '';
               if (node.type == 'discovery2mqtt-in') {
                 option = '<option value=\'' + topic + '\' data-name="' + friendly_name + '" data-homekit="' + homekit + '">' + name + '</option>';
+                $(option).appendTo(htmlgroup);
               } else if (node.type == 'discovery2mqtt-out' && p.command_topic) {
                 option = '<option value=\'' + topic + '\' data-name="' + friendly_name + '">' + name + '</option>';
+                $(option).appendTo(htmlgroup);
+              } else if (node.type == 'discovery2mqtt-status' && p.availability_topic) {
+                if (statusgroup != p.control_name) {
+                  option = '<option value=\'' + topic + '\' data-name="' + p.control_name + '">' + p.control_name + '</option>';
+                  $(option).appendTo(componentElm);
+                  statusgroup = p.control_name;
+                }
               }
-              $(option).appendTo(htmlgroup);
             });
 
             componentElm.val(nodeValue);

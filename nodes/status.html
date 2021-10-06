@@ -1,4 +1,4 @@
-<script type="text/x-red" data-template-name="discovery2mqtt-in">
+<script type="text/x-red" data-template-name="discovery2mqtt-status">
     <link rel="stylesheet" href="discovery2mqtt/static/css/multiple-select.min.css" type="text/css" />
     <link rel="stylesheet" href="discovery2mqtt/static/css/common.css" type="text/css" />
 
@@ -18,41 +18,26 @@
         <label for="force-refresh" class="l-width"><i class="fa fa-refresh"></i> <span data-i18n="label.refresh"></span></label>
         <a class="red-ui-button d2m-width" id="force-refresh" name="force-refresh"><span data-i18n="label.refresh_devices_list"></span></a>
     </div>
-    <div class="form-row">
-        <label for="node-input-payload_type" class="l-width"><i class="fa fa-tag"></i> <span data-i18n="label.payload_type"></span></label>
-        <select id="node-input-payload_type" data-single="true"></select>
-    </div>
-    <div class="form-row">
-        <label for="node-input-start_msg" class="l-width"><i class='fa fa-share-square'></i> <span data-i18n="label.start_msg"></span></label>
-        <input type="checkbox" id="node-input-start_msg" checked="checked" style="display: inline-block; width: auto; vertical-align: top;"> <span data-i18n="label.start_msg_help"></span></input>
-    </div>
-    <div class="form-row">
-        <label for="node-input-indicator" class="l-width"><i class='fa fa-toggle-on'></i> <span data-i18n="label.indicator"></span></label>
-        <input type="checkbox" id="node-input-indicator" checked="checked" style="display: inline-block; width: auto; vertical-align: top;"> <span data-i18n="label.indicator_help"></span></input>
-    </div>
     <div class="form-tips" data-i18n="[html]tip.deploy"></div>
 </script>
 
 <script type='text/javascript'>
-    RED.nodes.registerType('discovery2mqtt-in', {
+    RED.nodes.registerType('discovery2mqtt-status', {
         category: 'Discovery2mqtt',
         color: 'darksalmon',
         defaults: {
             name: { value: '' },
             server: { type: 'discovery2mqtt-server', required: true },
             component: { value: null, required: true },
-            payload_type: { value: 'raw'},
-            start_msg: { value: true },
-            indicator: { value: true },
         },
         inputs: 0,
         outputs: 1,
         outputLabels: ["value"],
-        paletteLabel: 'in',
+        paletteLabel: 'status',
         align: 'left',
-        icon: 'font-awesome/fa-cube',
+        icon: 'font-awesome/fa-refresh',
         label: function () {
-            return (this.name || 'd2m-input');
+            return (this.name || 'd2m-status');
         },
         oneditprepare: function () {
             var node = this;
@@ -60,10 +45,6 @@
             setTimeout(function () {
                 d2m_getComponentList(node, node.component);
             }, 100);
-
-            setTimeout(function () {
-                d2m_getTypeList(node.payload_type);
-            }, 750);
         }
     });
 </script>
