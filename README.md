@@ -6,6 +6,7 @@ More informations about [MQTT Discovery](https://www.home-assistant.io/docs/mqtt
 Available nodes are:
 * discovery2mqtt-in
 * discovery2mqtt-out
+* discovery2mqtt-status
 
 Support components:
 * switch
