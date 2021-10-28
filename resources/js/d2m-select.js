@@ -29,7 +29,7 @@ function d2m_getComponentList(node, nodeValue) {
             data.forEach(function (p) {
               if (node.type != 'discovery2mqtt-status') {
                 if (optgroup != p.control_name) {
-                  htmlgroup = $('<optgroup/>', { label: p.control_name });
+                  htmlgroup = $('<optgroup/>').attr('label', p.control_name);
                   htmlgroup.appendTo(componentElm);
                   optgroup = p.control_name;
                 }
@@ -40,24 +40,20 @@ function d2m_getComponentList(node, nodeValue) {
               let name = p.device_name + ' (' + p.control_name + '.' + p.type + ')';
               let homekit = p.homekit || '';
 
-              let option = '';
               if (node.type == 'discovery2mqtt-in') {
-                option = '<option value=\'' + topic + '\' data-name="' + friendly_name + '" data-homekit="' + homekit + '">' + name + '</option>';
-                $(option).appendTo(htmlgroup);
+                $(`<option>${name}</option>`).attr('value', topic).attr('data-name', friendly_name).attr('data-homekit', homekit).appendTo(htmlgroup);
               } else if (node.type == 'discovery2mqtt-out' && p.command_topic) {
-                option = '<option value=\'' + topic + '\' data-name="' + friendly_name + '">' + name + '</option>';
-                $(option).appendTo(htmlgroup);
+                $(`<option>${name}</option>`).attr('value', topic).attr('data-name', friendly_name).appendTo(htmlgroup);
               } else if (node.type == 'discovery2mqtt-status' && p.availability_topic) {
                 if (statusgroup != p.control_name) {
-                  option = '<option value=\'' + topic + '\' data-name="' + p.control_name + '">' + p.control_name + '</option>';
-                  $(option).appendTo(componentElm);
+                  $(`<option>${p.control_name}</option>`).attr('value', topic).attr('data-name', p.control_name).appendTo(componentElm);
                   statusgroup = p.control_name;
                 }
               }
             });
 
-            componentElm.val(nodeValue);
-            componentElm.multipleSelect('refresh');
+            componentElm.multipleSelect('refresh').multipleSelect('enable');
+            componentElm.multipleSelect('setSelects', [nodeValue]);
           } catch (_) { }
         });
     }
@@ -69,7 +65,8 @@ function d2m_getComponentList(node, nodeValue) {
   var nameElm = $('#node-input-name');
 
   // init multiselect
-  componentElm.multipleSelect({ filter: true });
+  componentElm.addClass('multiple-select');
+  componentElm.multipleSelect({ filter: true, single: true });
 
   // get value
   let value = componentElm.val() || nodeValue;
@@ -121,16 +118,16 @@ function d2m_getTypeList(nodeValue) {
     typeElm.children().remove();
 
     // init
-    $('<option value="raw">Raw</option>').appendTo(typeElm);
+    $(`<option>Raw</option>`).attr('value', 'raw').appendTo(typeElm);
     let homekit = $('#node-input-component option:selected').attr('data-homekit');
     if (homekit) {
-      $('<option value="' + homekit + '">' + homekit + ' (HomeKit)</option>').appendTo(typeElm);
+      $(`<option>${homekit} (HomeKit)</option>`).attr('value', homekit).appendTo(typeElm);
     }
 
     nodeValue = homekit != nodeValue ? 'raw' : homekit;
 
-    typeElm.val(nodeValue);
-    typeElm.multipleSelect('refresh');
+    typeElm.multipleSelect('refresh').multipleSelect('enable');
+    typeElm.multipleSelect('setSelects', [nodeValue]);
   }
 
   var typeElm = $('#node-input-payload_type');
@@ -138,7 +135,8 @@ function d2m_getTypeList(nodeValue) {
   var refreshElm = $('#force-refresh');
 
   // init multiselect
-  typeElm.multipleSelect();
+  typeElm.addClass('multiple-select');
+  typeElm.multipleSelect({ filter: true, single: true });
 
   // get value
   let value = typeElm.val() || nodeValue;

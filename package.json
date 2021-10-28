@@ -14,7 +14,8 @@
     }
   },
   "dependencies": {
-    "mqtt": "^4.2.6"
+    "mqtt": "^4.2.6",
+    "multiple-select": "^1.5.2"
   },
   "bugs": {
     "url": "https://github.com/twocolors/node-red-contrib-discovery2mqtt/issues"
